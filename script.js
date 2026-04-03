@@ -16,17 +16,27 @@ sendBtn.addEventListener("click", () => {
 });
 
 async function sendMsg() {
-    let input = userInput.value.trim();
+    const input = userInput.value.trim();
     if (input === "") return;
 
     addMsg(input, "user");
     userInput.value = "";
 
-    setTimeout(()=>{
-        botMsg("Error connecting to Server.", "bot");
-        res = true;
-    },500);
-        
+    const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify([{ role: "user", content: input }])
+    });
+    const data = await res.json();
+    console.log(res.json());
+    console.log(typeof res.json());
+
+    botMsg(data.reply, "bot");
+    res = true;
+
+
 }
 
 function addMsg(text, type) {
@@ -48,7 +58,7 @@ async function botMsg(text, type) {
 
     for (let char of text) {
         botMsg.textContent += char;
-        await sleep(20);
+        await sleep(5);
     }
 }
 
